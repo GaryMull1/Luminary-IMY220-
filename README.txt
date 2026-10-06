@@ -3,7 +3,7 @@ GITHUB
 ============================================
 
 GitHub Repository:
-https://github.com/Fluffyboyyy/Luminary-IMY220-
+https://github.com/GaryMull1/Luminary-IMY220-
 
 ============================================
 DOCKER COMMANDS 
