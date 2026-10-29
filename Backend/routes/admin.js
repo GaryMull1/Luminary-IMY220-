@@ -38,7 +38,20 @@ router.get('/posts', async (req, res) => {
   try {
     const db = getDB();
     const posts = await db.collection('posts').find({}).toArray();
-    res.json({ posts });
+
+    // 👇 ADD THIS: Fetch the owners so the frontend knows who made the post
+    const ownerIds = [...new Set(posts.map(p => p.owner.toString()))];
+    const users = await db.collection('users')
+      .find({ _id: { $in: ownerIds.map(id => new ObjectId(id)) } })
+      .toArray();
+
+    // 👇 Map the owner data into the post
+    const postsWithOwners = posts.map(p => ({
+      ...p,
+      owner: users.find(u => u._id.toString() === p.owner.toString()) || { name: 'Unknown' }
+    }));
+
+    res.json({ posts: postsWithOwners });
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 

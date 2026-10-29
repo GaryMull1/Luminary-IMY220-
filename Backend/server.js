@@ -17,6 +17,7 @@ import friendRoutes from './routes/friends.js';
 import activityRoutes from './routes/activity.js';
 import adminRoutes from './routes/admin.js';
 import reportRoutes from './routes/reports.js';
+import searchRoutes from './routes/search.js';
 
 
 
@@ -51,6 +52,7 @@ app.use('/api/friends', friendRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/search', searchRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => {

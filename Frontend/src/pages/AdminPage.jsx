@@ -6,6 +6,7 @@ import './AdminPage.css';
 const TABS = [
   { key: 'users', label: 'Users' },
   { key: 'posts', label: 'Posts' },
+  { key: 'albums', label: 'Albums' }, 
   { key: 'reported', label: 'Reported Posts' },
   { key: 'reasons', label: 'Report Reasons' },
 ];
@@ -33,6 +34,7 @@ const AdminPage = () => {
 
       {activeTab === 'users' && <UsersTab />}
       {activeTab === 'posts' && <PostsTab />}
+      {activeTab === 'albums' && <AlbumsTab />}
       {activeTab === 'reported' && <ReportedPostsTab />}
       {activeTab === 'reasons' && <ReasonsTab />}
     </div>
@@ -645,6 +647,92 @@ const ReasonsTab = () => {
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+/* ----------------------------------------
+   ALBUMS TAB
+   ---------------------------------------- */
+
+const AlbumsTab = () => {
+  const [albums, setAlbums] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [actingOn, setActingOn] = useState(null);
+
+  const fetchAlbums = useCallback(async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const data = await api('/api/admin/albums');
+      setAlbums(data.albums || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAlbums();
+  }, [fetchAlbums]);
+
+  const handleDelete = async (album) => {
+    if (
+      !window.confirm(
+        `Delete album "${album.name}"? The posts inside will stay, but the album will be removed.`
+      )
+    )
+      return;
+      
+    setActingOn(album._id);
+    try {
+      await api(`/api/admin/albums/${album._id}`, { method: 'DELETE' });
+      setAlbums((prev) => prev.filter((a) => a._id !== album._id));
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setActingOn(null);
+    }
+  };
+
+  if (isLoading) return <Loading />;
+  if (error) return <ErrorMsg msg={error} />;
+  if (albums.length === 0) return <Empty msg="No albums." />;
+
+  return (
+    <div className="admin-table">
+      {albums.map((album) => {
+        const isActing = actingOn === album._id;
+        const cover = album.coverImage || '';
+
+        return (
+          <div key={album._id} className="admin-row flex items-center gap-3 p-3 flex-wrap">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <img
+                src={cover || 'https://via.placeholder.com/60?text=Album'}
+                alt={album.name}
+                className="w-12 h-12 rounded object-cover flex-shrink-0"
+              />
+              <div className="flex flex-col min-w-0">
+                <span className="font-semibold text-sm truncate">{album.name}</span>
+                <span className="text-xs text-[color:var(--color-gray)] truncate">
+                  {album.description || 'No description'} · {album.posts?.length || 0} posts
+                </span>
+              </div>
+            </div>
+            
+            <button
+              className="admin-btn admin-btn-danger flex-shrink-0"
+              onClick={() => handleDelete(album)}
+              disabled={isActing}
+            >
+              {isActing ? '...' : 'Delete Album'}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 };

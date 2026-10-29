@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../../api';
 import './PostDetails.css';
 import AlbumPicker from './AlbumPicker';
+import Hashtag from '../basic/Hashtag';
 
 const PostDetails = ({ post, isOwner, currentUser, onEdit, onDelete }) => {
   const [showAlbumPicker, setShowAlbumPicker] = useState(false);
@@ -229,13 +230,28 @@ const PostDetails = ({ post, isOwner, currentUser, onEdit, onDelete }) => {
         {post.hashtags?.length > 0 && (
           <div className="post-details-hashtags flex flex-wrap gap-2 mb-4">
             {post.hashtags.map((tag, index) => (
-              <span key={index} className="hashtag">
-                #{tag}
-              </span>
+              <Hashtag key={index} tag={tag} />
             ))}
           </div>
         )}
 
+        {post.albums?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4 items-center">
+            <span className="text-xs text-[color:var(--color-gray)] font-semibold uppercase tracking-wider">
+              In Albums:
+            </span>
+            {post.albums.map((album) => (
+              <Link
+                key={album._id}
+                to={`/album/${album._id}`}
+                className="flex items-center gap-1 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] px-3 py-1 rounded-full text-xs font-semibold hover:bg-[color:var(--color-primary)]/20 transition-colors no-underline"
+              >
+                📁 {album.name}
+              </Link>
+            ))}
+          </div>
+        )}
+        
         {feedback && (
           <p className="text-sm text-[color:var(--color-primary)] mb-2">
             {feedback}
@@ -245,9 +261,8 @@ const PostDetails = ({ post, isOwner, currentUser, onEdit, onDelete }) => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 py-4 border-b border-[color:var(--color-gray-light)] mb-2">
           <div className="flex items-center gap-4 md:gap-8">
             <button
-              className={`like-btn flex items-center gap-1 text-base px-2 py-1 ${
-                isLiked ? 'liked' : ''
-              }`}
+              className={`like-btn flex items-center gap-1 text-base px-2 py-1 ${isLiked ? 'liked' : ''
+                }`}
               onClick={handleLike}
               disabled={isLiking}
             >

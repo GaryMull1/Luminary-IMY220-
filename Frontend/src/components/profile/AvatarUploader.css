@@ -1,0 +1,98 @@
+.avatar-uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-uploader-dropzone {
+  position: relative;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  line-height: 0;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  outline: none;
+}
+
+.avatar-uploader-dropzone:focus-visible {
+  border-color: var(--color-primary, #6c63ff);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25);
+}
+
+.avatar-uploader-dropzone.is-dragging {
+  border-color: var(--color-primary, #6c63ff);
+  transform: scale(1.03);
+}
+
+.avatar-uploader-dropzone.is-uploading {
+  cursor: wait;
+}
+
+.avatar-uploader-dropzone .profile-avatar {
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: filter 0.2s ease;
+}
+
+.avatar-uploader-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.avatar-uploader-dropzone:hover .avatar-uploader-overlay,
+.avatar-uploader-dropzone:focus-visible .avatar-uploader-overlay,
+.avatar-uploader-dropzone.is-dragging .avatar-uploader-overlay,
+.avatar-uploader-dropzone.is-uploading .avatar-uploader-overlay {
+  opacity: 1;
+}
+
+.avatar-uploader-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.avatar-uploader-text {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.avatar-uploader-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: avatar-spin 0.7s linear infinite;
+}
+
+@keyframes avatar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.avatar-uploader-input {
+  display: none;
+}
+
+.avatar-uploader-error {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--color-danger, #e53e3e);
+  text-align: center;
+}
