@@ -84,7 +84,13 @@ const ProfilePage = () => {
   return (
     <div className="max-w-[900px] mx-auto p-2 md:p-8 min-h-screen">
       <div className="flex flex-col gap-4 md:gap-8">
-        <Profile profile={profileData} isOwnProfile={isOwnProfile} />
+        <Profile
+          profile={profileData}
+          isOwnProfile={isOwnProfile}
+          onAvatarChange={(newAvatar) =>
+            setProfileData((prev) => ({ ...prev, avatar: newAvatar }))
+          }
+        />
 
         {/* Friend button — only when viewing someone else's profile */}
         {!isOwnProfile && (
@@ -132,16 +138,24 @@ const ProfilePage = () => {
         )}
 
         {!profileData.limited && (
-          <FriendList friends={friendsData} isOwnProfile={isOwnProfile} />
+          <>
+            <FriendList friends={friendsData} isOwnProfile={isOwnProfile} />
+            
+            <PostList posts={postsData} isOwnProfile={isOwnProfile} />
+            
+            <AlbumList
+              albums={albumsData}
+              isOwnProfile={isOwnProfile}
+              onAlbumsChange={setAlbumsData}
+            />
+
+            
+          </>
         )}
 
-        <AlbumList
-          albums={albumsData}
-          isOwnProfile={isOwnProfile}
-          onAlbumsChange={setAlbumsData}
-        />
 
-        <PostList posts={postsData} isOwnProfile={isOwnProfile} />
+
+
       </div>
     </div>
   );

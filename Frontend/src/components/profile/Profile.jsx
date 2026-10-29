@@ -1,7 +1,8 @@
 import React from 'react';
 import './Profile.css';
+import AvatarUploader from './AvatarUploader';
 
-const Profile = ({ profile, isOwnProfile }) => {
+const Profile = ({ profile, isOwnProfile, onAvatarChange }) => {
   const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     profile.name
   )}&background=6C63FF&color=fff&size=120`;
@@ -32,11 +33,18 @@ const Profile = ({ profile, isOwnProfile }) => {
   return (
     <div className="profile flex flex-col items-center p-4 md:p-8">
       <div className="mb-4">
-        <img
-          src={profile.avatar || defaultAvatar}
-          alt={profile.name}
-          className="profile-avatar w-20 h-20 md:w-[120px] md:h-[120px]"
-        />
+        {isOwnProfile ? (
+          <AvatarUploader
+            profile={profile}
+            onAvatarUpdated={onAvatarChange}
+          />
+        ) : (
+          <img
+            src={profile.avatar || defaultAvatar}
+            alt={profile.name}
+            className="profile-avatar w-20 h-20 md:w-[120px] md:h-[120px]"
+          />
+        )}
       </div>
 
       <div className="text-center w-full">

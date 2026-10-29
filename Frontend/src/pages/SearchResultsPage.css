@@ -1,0 +1,15 @@
+.search-results-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.search-result-row {
+  border-radius: 0.5rem;
+  transition: background 0.15s;
+}
+.search-result-row:hover {
+  background: var(--color-gray-light, #f2f2f2);
+}
+.search-post-tile:hover,
+.search-album-card:hover {
+  opacity: 0.9;
+}

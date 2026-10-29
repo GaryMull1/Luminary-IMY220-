@@ -11,6 +11,7 @@ import AdminRoute from './components/basic/AdminRoute';
 import AlbumPage from './pages/AlbumPage';
 import FriendRequestPage from './pages/FriendRequestPage';
 import AdminPage from './pages/AdminPage';
+import SearchResultsPage from './pages/SearchResultsPage';
 import './App.css';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                     <Route path="/post/:postId" element={<PostPage />} />
                     <Route path="/create" element={<CreatePost />} />
                     <Route path="/album/:albumId" element={<AlbumPage />} />
+                    <Route path="/search" element={<SearchResultsPage />} />
                     <Route
                       path="/friends/requests"
                       element={<FriendRequestPage />}

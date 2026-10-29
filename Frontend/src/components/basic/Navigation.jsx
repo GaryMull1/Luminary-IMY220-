@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 import './Navigation.css';
+import ThemeToggle from '../basic/ThemeToggle';
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [q, setQ] = useState('');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -20,9 +23,13 @@ const Navigation = () => {
     try {
       await api('/api/auth/logout', { method: 'POST' });
     } catch {
-      // ignore
     }
     window.location.href = '/';
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (q.trim()) navigate(`/search?q=${encodeURIComponent(q.trim())}`);
   };
 
   return (
@@ -36,6 +43,15 @@ const Navigation = () => {
         </div>
 
         <div className="flex items-center gap-1 md:gap-2">
+          <form onSubmit={onSubmit} className="nav-search">
+            <input
+              type="text"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search…"
+              className="search-input text-sm"
+            />
+          </form>
           <Link
             to="/home"
             className={`nav-link text-xs md:text-sm rounded-full px-3 py-1.5 md:px-4 md:py-2 ${
@@ -70,6 +86,8 @@ const Navigation = () => {
           >
             + New Post
           </Link>
+
+          <ThemeToggle />
 
           <button
             onClick={handleLogout}

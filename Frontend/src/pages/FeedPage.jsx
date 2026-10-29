@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
 import './FeedPage.css';
+import Hashtag from '../components/basic/Hashtag';
 
 const FeedPage = () => {
   const [feedType, setFeedType] = useState('local');
-  const [searchTerm, setSearchTerm] = useState('');
   const [feed, setFeed] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,19 +28,6 @@ const FeedPage = () => {
     return () => { cancelled = true; };
   }, [feedType]);
 
-  const filteredFeed = searchTerm
-    ? feed.filter((item) => {
-        const q = searchTerm.toLowerCase();
-        const post = item.post;
-        return (
-          post?.description?.toLowerCase().includes(q) ||
-          post?.hashtags?.some((t) => t.includes(q)) ||
-          item.user?.name?.toLowerCase().includes(q) ||
-          item.user?.username?.toLowerCase().includes(q)
-        );
-      })
-    : feed;
-
   return (
     <div className="max-w-[800px] mx-auto p-2 md:p-8">
       <div className="text-center mb-4 md:mb-6">
@@ -50,17 +37,6 @@ const FeedPage = () => {
             ? 'See what your friends are sharing'
             : 'Discover posts from the community'}
         </p>
-      </div>
-
-      <div className="relative max-w-full md:max-w-[500px] mx-auto mb-4 md:mb-6">
-        <input
-          type="text"
-          className="search-input w-full py-2 md:py-3 pl-10 md:pl-12 pr-4 text-sm md:text-base"
-          placeholder="Search posts, users, hashtags"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <span className="search-icon left-4 text-base md:text-lg">🔍</span>
       </div>
 
       <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-8">
@@ -94,26 +70,110 @@ const FeedPage = () => {
         </p>
       )}
 
-      {!isLoading && !error && filteredFeed.length === 0 && (
+      {!isLoading && !error && feed.length === 0 && (
         <p className="text-center text-[color:var(--color-gray)] py-8">
-          {searchTerm ? 'No posts match your search.' : 'No activity yet.'}
+          No activity yet.
         </p>
       )}
 
       <div className="flex flex-col gap-4 md:gap-8">
-        {filteredFeed.map((item) => {
+        {feed.map((item) => {
           const post = item.post;
+          const album = item.album;
+
+          if (album) {
+            const owner = album.owner || item.user;
+            const createdLabel = new Date(item.createdAt).toLocaleString();
+            const cover = album.coverImage || album.posts?.[0]?.image || '';
+
+            return (
+              <article key={item._id} className="post-card">
+                <div className="flex items-center justify-between p-3 md:p-5">
+                  <Link
+                    to={`/profile/${owner._id}`}
+                    className="post-user flex items-center gap-2 md:gap-3 flex-1"
+                  >
+                    <img
+                      src={
+                        owner.profileImage ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          owner.name
+                        )}&background=6C63FF&color=fff&size=40`
+                      }
+                      alt={owner.name}
+                      className="post-avatar w-8 h-8 md:w-10 md:h-10"
+                    />
+                    <div className="flex flex-col">
+                      <span className="post-username text-sm md:text-[0.95rem]">
+                        {owner.name}
+                      </span>
+                      <span className="post-userhandle text-xs md:text-[0.8rem]">
+                        @{owner.username} · created an album
+                      </span>
+                    </div>
+                  </Link>
+                  <span className="post-time text-xs md:text-[0.8rem]">
+                    {createdLabel}
+                  </span>
+                </div>
+
+                <Link to={`/album/${album._id}`} className="post-image-link">
+                  <div className="post-image-wrapper">
+                    {cover ? (
+                      <img
+                        src={cover}
+                        alt={album.name}
+                        className="post-image"
+                      />
+                    ) : (
+                      <div className="w-full aspect-square bg-[color:var(--color-gray-light)] flex items-center justify-center text-sm">
+                        {album.name}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+
+                <div className="p-3 md:p-5">
+                  <Link
+                    to={`/album/${album._id}`}
+                    className="post-description-link"
+                  >
+                    <p className="post-description text-sm md:text-[0.95rem] leading-relaxed mb-2">
+                      <strong>{album.name}</strong>
+                      {album.description && ` — ${album.description}`}
+                    </p>
+                  </Link>
+                  {album.hashtags?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {album.hashtags.map((tag, index) => (
+                        <Hashtag key={index} tag={tag} />
+                      ))}
+                    </div>
+                  )}
+                  <div className="post-stats flex gap-4 md:gap-6 pt-3">
+                    <span className="post-stat text-xs md:text-[0.9rem]">
+                      🖼️ {album.posts?.length || album.postCount || 0} posts
+                    </span>
+                  </div>
+                </div>
+              </article>
+            );
+          }
+
           if (!post) return null;
 
           if (post.isHidden) {
             return (
-              <article
-                key={item._id}
-                className="post-card p-4 text-center"
-              >
-                <p className="text-[color:var(--color-gray)]">
+              <article key={item._id} className="post-card p-4 text-center">
+                <p className="text-[color:var(--color-gray)] mb-2">
                   ⚠️ This post has been reported and is hidden.
                 </p>
+                <Link
+                  to={`/post/${post._id}`}
+                  className="text-xs text-[color:var(--color-primary)] underline"
+                >
+                  View post anyway →
+                </Link>
               </article>
             );
           }
@@ -173,17 +233,15 @@ const FeedPage = () => {
                 </Link>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {post.hashtags?.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="hashtag text-sm md:text-[0.9rem]"
-                    >
-                      #{tag}
-                    </span>
+                    <Hashtag key={index} tag={tag} />
                   ))}
                 </div>
                 <div className="post-stats flex gap-4 md:gap-6 pt-3">
                   <span className="post-stat text-xs md:text-[0.9rem]">
-                    ❤️ {Array.isArray(post.likes) ? post.likes.length : post.likes || 0}
+                    ❤️{' '}
+                    {Array.isArray(post.likes)
+                      ? post.likes.length
+                      : post.likes || 0}
                   </span>
                   <span className="post-stat text-xs md:text-[0.9rem]">
                     💬 {post.comments?.length || 0}
@@ -198,4 +256,4 @@ const FeedPage = () => {
   );
 };
 
-export default FeedPage;
+export default FeedPage; 

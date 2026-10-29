@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../api';
 import './AlbumPage.css';
+import Hashtag from '../components/basic/Hashtag';
 
 const AlbumPage = () => {
   const { albumId } = useParams();
@@ -99,9 +100,7 @@ const AlbumPage = () => {
         {album.hashtags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {album.hashtags.map((tag, i) => (
-              <span key={i} className="hashtag">
-                #{tag}
-              </span>
+              <Hashtag key={i} tag={tag} />
             ))}
           </div>
         )}

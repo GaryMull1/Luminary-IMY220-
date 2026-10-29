@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './PostList.css';
+import Hashtag from '../basic/Hashtag';
 
 const PostList = ({ posts, isOwnProfile }) => {
   if (!posts || posts.length === 0) {
@@ -55,6 +56,13 @@ const PostList = ({ posts, isOwnProfile }) => {
               <span className="post-item-date text-[0.7rem] md:text-[0.8rem]">
                 {new Date(post.createdAt).toLocaleDateString()}
               </span>
+              {post.hashtags?.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-1">
+                  {post.hashtags.map((tag, i) => (
+                    <Hashtag key={i} tag={tag} />
+                  ))}
+                </div>
+              )}
             </div>
           </Link>
         ))}
